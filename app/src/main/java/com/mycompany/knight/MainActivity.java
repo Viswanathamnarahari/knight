@@ -6,8 +6,8 @@ import android.view.*;
 import android.widget.*;
 
 public class MainActivity extends Activity 
-{ 	static int[] stateA 	= new int[64];
-	int[] kStateA 	= new int[66];
+{ 	static int[] stateA63 	= new int[64];
+	int[] kstateA63 	= new int[66];
 	int[] next8A512 = new int[512];
 	 static int iterCount=0;
 	int cursor 		= 0;
@@ -47,11 +47,11 @@ public class MainActivity extends Activity
 		iterCount++;
 		
 		if (iterCount >= 20){return ;}
-		if (stateA[spot] != NONE){return ;}
+		if (stateA63[spot] != NONE){return ;}
 		
 		nextSpot = getNextHop(spot);
 		
-		stateA[spot] = nextSpot;
+		stateA63[spot] = nextSpot;
 		
 		hopFrom(nextSpot);
 	}
@@ -137,7 +137,7 @@ public class MainActivity extends Activity
 		// initialize state data
 		for (int st = 0; st <= 63; st++)
 		{
-			stateA[st] = NONE;
+			stateA63[st] = NONE;
 		}
 		
 		initCursor8A();
@@ -254,7 +254,7 @@ public class MainActivity extends Activity
 		for(int spot : cursor8A){
 			
 			if (spot <= 64 ){
-				kStateA[spot] = NH ;
+				kstateA63[spot] = NH ;
 			}
 		}
 	}
@@ -279,8 +279,8 @@ public class MainActivity extends Activity
 			for(int x =0;x<8; x++){
 				
 				if(((y*8)+x) != cursor)
-					{//stateSpot = stateA[(y*8)+x];
-						stateSpot = kStateA[(y*8)+x];
+					{//stateSpot = stateA63[(y*8)+x];
+						stateSpot = kstateA63[(y*8)+x];
 				}else{
 					stateSpot= KNIGHT;
 					}
@@ -388,7 +388,7 @@ public class MainActivity extends Activity
 		// initialize state data
 		for (int st = 0; st <= 63; st++)
 		{
-			kStateA[st] = NONE;
+			kstateA63[st] = NONE;
 		}
 
 		
