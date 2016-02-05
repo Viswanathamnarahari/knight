@@ -4,23 +4,25 @@ import android.app.*;
 import android.os.*;
 import android.view.*;
 import android.widget.*;
+import android.view.ViewDebug.*;
 
 public class MainActivity extends Activity 
 { 	static int[] stateA63 	= new int[64];
 	int[] kstateA63 	= new int[66];
-	int[] next8A512 = new int[512];
+	static int[] next8A512 = new int[512];
 	 static int iterCount=0;
 	int cursor 		= 0;
 	int[] cursor8A 	= new int[8];
 	int cursorX 	=0;
 	int cursorY 	=0;
-	
+	public static final int MAX64 		= 64;
 	public static final int KNIGHT 		= 65;
 	public static final int NONE 		= 66;
 	public static final int OB 			= 67; //out of boundary
 	public static final int NH 			= 68 ;// next hop good
 	String BLANK1 = "  ";
 	String BLANK2 = " ";
+	String mode = "DIAG";
 	
 	
 	
@@ -46,10 +48,12 @@ public class MainActivity extends Activity
 		
 		iterCount++;
 		
+		
 		if (iterCount >= 20){return ;}
 		if (stateA63[spot] != NONE){return ;}
 		
 		nextSpot = getNextHop(spot);
+		if (nextSpot >= MAX64){return;}
 		
 		stateA63[spot] = nextSpot;
 		
@@ -58,12 +62,28 @@ public class MainActivity extends Activity
 
 	private static int getNextHop(int spot)
 	{
-		// TODO: Implement this method
-		return 0;
+		int nextHop =MAX64;
+		int i = 0;
+		
+		
+		
+		while(nextHop >= MAX64){
+			if(i==8){return MAX64;}
+			nextHop = next8A512[spot +i];
+			i++;
+		}
+		
+		
+		return nextHop;
 	}
 	
+	private  void toast(int num)
+	{
 	
-	private void toast(String message)
+		toast(Integer.toString(num));
+		
+	}
+	private  void toast(String message)
 	{
 		Toast.makeText(MainActivity.this, 
 					   message , Toast.LENGTH_LONG).show();
@@ -90,8 +110,39 @@ public class MainActivity extends Activity
 					rightButton();
 					break;
 				}
+			case R.id.startButton:{
+					//rightButton();
+					startButton();
+					break;
+				}
+			case R.id.modeButton:{
+					//rightButton();
+					modeButton();
+					break;
+				}
 
 		}
+	}
+
+	private void modeButton()
+	{
+		// TODO: Implement this method
+		Button modeButton = (Button)findViewById(R.id.modeButton);
+		//modeButton.setTextColor(555);
+		if (mode == "DIAG"){
+			mode = "RUN";
+			modeButton.setText("RUN");
+		}else{
+			mode = "DIAG";
+			modeButton.setText("DIAG");
+		}
+	}
+
+	private void startButton()
+	{
+		// TODO: Implement this method
+		hopFrom(cursor);
+		displayBoard();
 	}
 
 	private void rightButton()
@@ -279,8 +330,16 @@ public class MainActivity extends Activity
 			for(int x =0;x<8; x++){
 				
 				if(((y*8)+x) != cursor)
-					{//stateSpot = stateA63[(y*8)+x];
-						stateSpot = kstateA63[(y*8)+x];
+					{
+						if (mode == "DIAG"){
+							stateSpot = kstateA63[(y*8)+x];
+							
+						}else{
+							stateSpot = stateA63[(y*8)+x];
+							
+						}
+						
+						
 				}else{
 					stateSpot= KNIGHT;
 					}

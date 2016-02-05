@@ -166,25 +166,29 @@
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
 			android:text="Start"
-			android:id="@+id/Start"/>
+			android:onClick="buttonClicked"
+			android:id="@+id/startButton"/>
 
 		<Button
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
 			android:text="Stop"
+			android:onClick="buttonClicked"
 			android:id="@+id/Stop"/>
 
 		<Button
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
 			android:text="Back"
+			android:onClick="buttonClicked"
 			android:id="@+id/Back"/>
 
 		<Button
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
-			android:text="Forward"
-			android:id="@+id/Forward"/>
+			android:text="diag"
+			android:onClick="buttonClicked"
+			android:id="@+id/modeButton"/>
 
 	</LinearLayout>
 
