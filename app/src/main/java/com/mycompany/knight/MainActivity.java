@@ -9,9 +9,10 @@ import android.view.ViewDebug.*;
 public class MainActivity extends Activity 
 { 	static int[] stateA63 	= new int[64];
 	int[] kstateA63 	= new int[66];
-	static int[] next8A512 = new int[512];
-	 static int iterCount=0;
-	int cursor 		= 0;
+    int[] next8A512 = new int[512];
+	int disp8A512count = 0;
+	static int iterCount=0;
+	static int cursor 		= 0;
 	int[] cursor8A 	= new int[8];
 	int cursorX 	=0;
 	int cursorY 	=0;
@@ -19,11 +20,33 @@ public class MainActivity extends Activity
 	public static final int KNIGHT 		= 65;
 	public static final int NONE 		= 66;
 	public static final int OB 			= 67; //out of boundary
-	public static final int NH 			= 68 ;// next hop good
+	public static final int NH 			= 68; // next hop good
+	
+	public static final int NoInt = 69;// used in trace as no value
+	public static final String NoString = "NS";// used in trace as no string
+	public static final String ResetTrace = "RT";// used in trace as no string
+	
+	
 	String BLANK1 = "  ";
 	String BLANK2 = " ";
 	String mode = "DIAG";
 	
+	//TextView traceView = (TextView)findViewById(R.id.trace);
+
+	public  void setTrace(String traceString,int traceInt)
+	{
+		TextView traceView = (TextView)findViewById(R.id.trace);
+		
+		if(traceString == ResetTrace){traceView.setText("");}
+		if(traceString != NoString){
+			traceView.setText(traceView.getText()+" "+traceString);
+		}
+		if(traceInt != NoInt){
+			traceView.setText(traceView.getText()+" "+ Integer.toString(traceInt));
+		}
+		
+	}
+
 	
 	
     @Override
@@ -35,44 +58,71 @@ public class MainActivity extends Activity
 		//TextView cursView = (TextView)findViewById(R.id.CursView);
 		
 		initialize();
+		cursor =0;
+		setCurYcurX(cursor);
 		displayBoard();
 		displayCursor();
 		
 		
     }
+	
+	
 
-	private static void hopFrom(int spot)
+	private  void hopFrom(int spot)
 	{
 		
 		int nextSpot = 0;
 		
 		iterCount++;
+		setTrace(toYXstr(spot), NoInt);
+		//setTrace("",stateA63[spot]);
 		
-		
-		if (iterCount >= 20){return ;}
+		if (iterCount >= 200){return ;}
 		if (stateA63[spot] != NONE){return ;}
 		
 		nextSpot = getNextHop(spot);
+		//setTrace("NS ",nextSpot);
+	
 		if (nextSpot >= MAX64){return;}
 		
 		stateA63[spot] = nextSpot;
-		
+		cursor = nextSpot;
 		hopFrom(nextSpot);
 	}
 
-	private static int getNextHop(int spot)
+	private String toYXstr(int spot)
 	{
+		// TODO: Implement this method
+		String YXstr;
+		YXstr= Integer.toString(spot/8)+Integer.toString(spot%8);
+		return YXstr;
+	}
+
+	private  int getNextHop(int spot)
+	{	//1.Get first best 8 hops
+		//2.return hop if it is not marked
+		//3.if hop marked try next hop
+		
+	
 		int nextHop =MAX64;
+		int inextHop;
 		int i = 0;
 		
-		
-		
 		while(nextHop >= MAX64){
-			if(i==8){return MAX64;}
-			nextHop = next8A512[spot +i];
+			// if(i==8){return MAX64;}
+			if(i==8){break;} //return MAX64
+			
+			inextHop = next8A512[(spot *8) +i];
+			
+			if (inextHop < MAX64){
+				
+				if(stateA63[inextHop] == NONE){
+					nextHop = inextHop;
+					} 
+				}
+			
 			i++;
 		}
-		
 		
 		return nextHop;
 	}
@@ -120,6 +170,18 @@ public class MainActivity extends Activity
 					modeButton();
 					break;
 				}
+			case R.id.dispButton:{
+					
+					Button dispButton = (Button)findViewById(R.id.dispButton);
+					
+					dispButton.setText("DISP: "+ Integer.toString(disp8A512count));
+					display512A8();
+					disp8A512count++;
+					if(disp8A512count == 8){disp8A512count=0;}
+					
+					
+					break;
+				}
 
 		}
 	}
@@ -128,14 +190,29 @@ public class MainActivity extends Activity
 	{
 		// TODO: Implement this method
 		Button modeButton = (Button)findViewById(R.id.modeButton);
+		
+		Button upButton = (Button)findViewById(R.id.upButton);
+		Button downButton = (Button)findViewById(R.id.downButton);
+		
+		
 		//modeButton.setTextColor(555);
 		if (mode == "DIAG"){
 			mode = "RUN";
 			modeButton.setText("RUN");
+			
+			//upButton.setVisibility(View.INVISIBLE);
+			//downButton.setVisibility(View.INVISIBLE);
+			
+			
 		}else{
 			mode = "DIAG";
 			modeButton.setText("DIAG");
+			
+			upButton.setVisibility(View.VISIBLE);
+			downButton.setVisibility(View.VISIBLE);
+			
 		}
+		displayBoard();
 	}
 
 	private void startButton()
@@ -143,23 +220,47 @@ public class MainActivity extends Activity
 		// TODO: Implement this method
 		hopFrom(cursor);
 		displayBoard();
+		displayCursor();
 	}
 
 	private void rightButton()
 	{
+		if(mode == "DIAG"){
+			
 		if (cursorX < 7){
 			cursorX = cursorX +1;
 			cursor = cursor +1;
+		}}
+		
+		if(mode == "RUN"){
+			//TODO
+			if (cursorX < 7){
+				cursorX = cursorX +1;
+				cursor = cursor +1;
+			}
+		
 		}
 		displayCursor();
 		
 	}
 
 	private void leftButton()
-	{
+	{	
+		
+		if(mode == "DIAG"){
 		if (cursorX != 0){
 			cursorX = cursorX -1;
 			cursor = cursor -1;
+		}}
+		
+		if(mode == "RUN"){
+			
+			//TODO
+			if (cursorX != 0){
+				cursorX = cursorX -1;
+				cursor = cursor -1;
+			}
+			
 		}
 		displayCursor();
 	}
@@ -170,6 +271,7 @@ public class MainActivity extends Activity
 			cursorY = cursorY +1;
 			cursor = cursor +8;
 		}
+		
 		
 		displayCursor();
 	}
@@ -202,17 +304,26 @@ public class MainActivity extends Activity
 	private void initNext8A512()
 	{
 		// TODO: Implement this method
-		for (int n8 = 0; n8 == 63; n8++)
+		for (int n8 = 0; n8 <= 63; n8++)
 		{
 			cursor = n8;
+			setCurYcurX(n8);
+			
 			setNext8();
 			
 			
-			for(int i=0;i<=7;i++){
-				next8A512[n8+i] = cursor8A[i];
-				
+			for(int i=0; i<= 7; i++){
+				next8A512[(n8*8)+i] = cursor8A[i];
+				//next8A512[(n8*8)+i] = i;
 				}
 		}
+	}
+
+	private void setCurYcurX(int tcursor)
+	{
+		// TODO: Implement this method
+		cursorY = tcursor/8;
+		cursorX = tcursor%8;
 	}
 
 	private void initCursor8A()
@@ -305,12 +416,13 @@ public class MainActivity extends Activity
 		for(int spot : cursor8A){
 			
 			if (spot <= 64 ){
-				kstateA63[spot] = NH ;
+				//kstateA63[spot] = NH ;
+				kstateA63[spot] = spot ;
 			}
 		}
 	}
 
-	private void toastdiag()
+	private void toastDiag()
 	{
 		// TODO: Implement this method
 		toast("Hello");
@@ -321,8 +433,8 @@ public class MainActivity extends Activity
 		String spotStr ;
 		TextView state = (TextView)findViewById(R.id.mainTextView1);
 		//state.setText("X 1 2 3 4 5 6 7 8 \n");
-		String display = "X    0  1   2   3   4   5   6   7 \n";
-		display = display + "Y| ---------------------------------------\n";
+		String display = "X    0  1  2  3  4  5  6  7 \n";
+		display = display + "Y|-------------------------\n";
 		
 		for (int y= 0; y < 8; y++)
 		{
@@ -343,30 +455,28 @@ public class MainActivity extends Activity
 				}else{
 					stateSpot= KNIGHT;
 					}
-//				if (stateSpot == KNIGHT){
-//					spotStr = "X  ";
-//				}else{
-//					spotStr = Integer.toString(stateSpot);
-//					}
-					
-					//new
+				
+				
 				switch ( stateSpot ){
 					
 					case KNIGHT :{
-							spotStr = " X ";
+							//spotStr = " X";
+							spotStr = "\uD83D\uDC0E";
+							
 							break;}
 					case NONE :{
-							spotStr = "    ";
+							spotStr = "  ";
 							break;}
 					case  NH :{
-							spotStr = " O  ";
+							spotStr = " O";
 							break;}
 					default:{
-							spotStr = Integer.toString(stateSpot);
-				
+							//spotStr = Integer.toString(stateSpot);
+							spotStr = toYXstr(stateSpot);
+							
 					}
-				}
-					//new end
+				} //switch
+					
 				
 				display = display  + " " + spotStr ;
 			}
@@ -390,12 +500,54 @@ public class MainActivity extends Activity
 		cursView.setText(integerToDisplay(cursor));
 		cursXYView.setText(Integer.toString(cursorY) + Integer.toString(cursorX));
 		
-		
+		if(mode=="DIAG"){
 		next8View.setText(getNext8Text());
 		next8XYView.setText(getNext8XYText());
+		}
 		
+		if(mode=="RUN"){
+			next8View.setText(getNext8A512Text());
+			next8XYView.setText(getNext8A512XYText());
+		}
 		displayBoard();
 	}
+
+	private CharSequence getNext8A512XYText()
+	{
+		// TODO: Implement this method
+		int Y,X;
+		
+		//setTrace("",cursor);
+
+
+		String next8A512XYText = "ST ";
+		for (int ix = 0; ix <= 7;ix++){
+
+			Y = (next8A512[cursor + ix]/8);
+			X = (next8A512[cursor + ix]%8 );
+			next8A512XYText = next8A512XYText + Integer.toString(Y) +Integer.toString(X) + " ";
+
+		}
+
+		
+		return next8A512XYText+ " "+"NT";
+	}
+
+	private CharSequence getNext8A512Text()
+	{
+		
+		String next8A512Text = "ST ";
+		
+		for (int ix = 0; ix <= 7;ix++){
+			next8A512Text = next8A512Text + integerToDisplay(next8A512[cursor + ix]) + " ";
+
+		}
+		
+		return next8A512Text+" "+"NT";
+	}
+	
+	
+	
 
 	private CharSequence getNext8XYText()
 	{   
@@ -450,8 +602,59 @@ public class MainActivity extends Activity
 			kstateA63[st] = NONE;
 		}
 
-		
+	}
+	
+	private void display512A8()
+	{	int stateSpot;
+		String spotStr ;
+		TextView state = (TextView)findViewById(R.id.mainTextView1);
+		//state.setText("X 1 2 3 4 5 6 7 8 \n");
+		String display = "X    0  1  2  3  4  5  6  7 \n";
+		display = display + "Y|-------------------------\n";
+
+		for (int y= 0; y < 8; y++)
+		{
+			display = display  + Integer.toString(y) + "| ";
+			for(int x =0;x<8; x++){
+
+				if(((y*8)+x) != cursor)
+				{
+					
+				//todo
+				stateSpot = next8A512[(((y*8)+x)*8)+ disp8A512count];
+				
+				//stateSpot = (y*8)+x+ disp8A512count;
+				}else{
+					stateSpot= KNIGHT;
+				}
+
+				switch ( stateSpot ){
+
+					case KNIGHT :{
+							//spotStr = " X";
+							spotStr = "\uD83D\uDC0E";
+
+							break;}
+					case NONE :{
+							spotStr = "  ";
+							break;}
+					case  NH :{
+							spotStr = " O";
+							break;}
+					default:{
+							//spotStr = Integer.toString(stateSpot);
+							spotStr = Integer.toString(stateSpot/8)+Integer.toString(stateSpot%8);
+
+						}
+				} //switch
 
 
+				display = display  + " " + spotStr ;
+			}
+			display = display  + "\n";
+
+			state.setText(display);
+
+		}
 	}
 }
