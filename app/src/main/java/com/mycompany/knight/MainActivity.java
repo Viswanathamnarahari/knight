@@ -37,7 +37,9 @@ public class MainActivity extends Activity
 	{
 		TextView traceView = (TextView)findViewById(R.id.trace);
 		
-		if(traceString == ResetTrace){traceView.setText("");}
+		if(traceString == ResetTrace){
+			traceView.setText("");
+			return;}
 		if(traceString != NoString){
 			traceView.setText(traceView.getText()+" "+traceString);
 		}
@@ -310,6 +312,7 @@ public class MainActivity extends Activity
 		initKstate();
 		displayBoard();
 		displayCursor();
+		setTrace(ResetTrace,NoInt);
 		
 		
 	}
