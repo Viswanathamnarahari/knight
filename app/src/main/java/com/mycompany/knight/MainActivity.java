@@ -165,6 +165,11 @@ public class MainActivity extends Activity
 					startButton();
 					break;
 				}
+			case R.id.resetButton:{
+					
+					resetButton();
+					break;
+				}
 			case R.id.modeButton:{
 					//rightButton();
 					modeButton();
@@ -184,6 +189,12 @@ public class MainActivity extends Activity
 				}
 
 		}
+	}
+
+	private void resetButton()
+	{
+		// TODO: 
+		initialize();
 	}
 
 	private void modeButton()
@@ -297,6 +308,8 @@ public class MainActivity extends Activity
 		setNext8();
 		initNext8A512();
 		initKstate();
+		displayBoard();
+		displayCursor();
 		
 		
 	}
