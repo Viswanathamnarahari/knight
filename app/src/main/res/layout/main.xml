@@ -165,9 +165,9 @@
 		<Button
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
-			android:text="Stop"
+			android:text="Reset"
 			android:onClick="buttonClicked"
-			android:id="@+id/Stop"/>
+			android:id="@+id/resetButton"/>
 
 		<Button
 			android:layout_height="wrap_content"

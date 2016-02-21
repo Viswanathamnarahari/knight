@@ -140,7 +140,7 @@ public class MainActivity extends Activity
 	}
 	public void buttonClicked(View v) {
 
-		//toast("Button Clicked");
+		
 
 		switch (v.getId()) {
 			case R.id.upButton:{
